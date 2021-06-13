@@ -23,10 +23,15 @@ struct LightPathNode {
     vec3 color;
     vec3 position;
     vec3 normal;
+    
+    float dVCM;
+    float dVM;
+    float dVC;
 };
 
-#define LIGHTPATHLENGTH 3
-
+#define LIGHTPATHLENGTH 5
+#define PI 3.14159265
+#define RAIO 1
 LightPathNode[LIGHTPATHLENGTH] light_paths_;
 
 //-----------------------------------------------------
@@ -43,13 +48,20 @@ void constructLightPath(inout uint seed) {
 
     vec3 ro = light.corner.xyz + light.v1.xyz * randomFloat(seed) + light.v2.xyz * randomFloat(seed);
     vec3 rd = light.normal.xyz + randomUnitVector(seed);
+    float emissionPdf = sqrt(rd.y) / PI;
     rd = normalize(rd);
 
     vec3 color = light.emission.xyz ;
-
+    color *= max(emissionPdf, 0.000001f);
     for (int i = 0; i < LIGHTPATHLENGTH; i++) {
         light_paths_[i].position = light_paths_[i].color = light_paths_[i].normal = vec3(0.0);
+        light_paths_[i].dVCM = light_paths_[i].dVC =  light_paths_[i].dVM = 0.0;
     }
+    float directPdf = 2.0 / length(cross(light.v1.xyz, light.v2.xyz)) /*number_of_lights*/ ;
+    emissionPdf *= directPdf;
+    light_paths_[0].dVCM = directPdf / emissionPdf;
+    light_paths_[0].dVC = sqrt(rd.y) / emissionPdf;
+    light_paths_[0].dVM = light_paths_[0].dVC /( PI*RAIO*RAIO/* *number_of_lights */);
 
     bool specular_bounce = false;
 
@@ -188,10 +200,10 @@ void main() {
     pixel_color = mix(last_frame_color.rgb, pixel_color, blend);
 
     imageStore(accumulation_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
-    
+
     // post processing
     pixel_color *= ubo_.exposure;
-    ivec2 size = imageSize(output_image_);
+
     if (ubo_.tone_map) {
         pixel_color = ACESFilm(pixel_color);
     }
@@ -199,5 +211,6 @@ void main() {
     if (ubo_.gamma_correction) {
         pixel_color = linearToSRGB(pixel_color);
     }
-        imageStore(output_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
+
+    imageStore(output_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
 }

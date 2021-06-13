@@ -16,13 +16,14 @@ struct alignas(16) UniformBufferObject {
     glm::mat4 projection {};
     glm::mat4 model_view_inverse {};
     glm::mat4 projection_inverse {};
-    float aperture {};
-    float focus_distance {};
-    uint32_t total_number_of_samples {};
+    float x {};
+    //float focus_distance {};
+    float fov {};
+    float y {};
     uint32_t number_of_samples {};
     uint32_t number_of_bounces {};
     uint32_t seed {};
-    uint32_t next_event_estimation {};  // bool
+    float z {};  // bool
     uint32_t gamma_correction {};  // bool
     uint32_t tone_map {};  // bool
     float exposure {};
