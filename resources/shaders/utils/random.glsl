@@ -46,8 +46,16 @@ uint initRandom(vec2 v, uint frame) {
     return uint(uint(v.x) * uint(1973) + uint(v.y) * uint(9277) + frame * uint(26699)) | uint(1);
 }
 
+int randomInt(inout uint seed, int min, int max) {
+    int i = int(wang_hash(seed));
+    if (i < 0)
+        i *= -1;
+    return (i % (max - min + 1)) + min;
+}
+
 float randomFloat(inout uint seed) {
     return float(wang_hash(seed)) / 4294967296.0;
+    //return float(wang_hash(seed));// / 67296.0;
 }
 
 vec3 randomUnitVector(inout uint seed) {

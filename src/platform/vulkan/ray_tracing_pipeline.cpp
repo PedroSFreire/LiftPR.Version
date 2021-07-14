@@ -172,6 +172,9 @@ RayTracingPipeline::RayTracingPipeline(const DeviceProcedures& device_procedures
     else if (algorithm == Algorithm::VCM) {
         rgen_path = "../resources/shaders/vcm.rgen.spv";
     }
+    else if (algorithm == Algorithm::PPM) {
+        rgen_path = "../resources/shaders/ppm.rgen.spv";
+    }
 
     const ShaderModule ray_gen_shader(device, rgen_path);
     const ShaderModule miss_shader(device, "../resources/shaders/path.rmiss.spv");
