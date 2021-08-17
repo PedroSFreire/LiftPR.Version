@@ -131,6 +131,14 @@ float getWeightForPath(int s, int t) {
     return float(s + t + 2);
 }
 
+bool isZero(vec3 color){
+    for(int i= 0; i < 3; i++){
+        if( color[i] > 0 )
+            return false;
+    }
+    return true;
+}
+
 vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
     float raio = RAIO/pow(ubo_.number_of_samples,0.5*RAIO); 
     uint ray_flags = gl_RayFlagsOpaqueNV;
@@ -194,6 +202,9 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
         if(ubo_.debug_normals) {
             return remap(ray_.normal, -1.0f, 1.0f, 0.0f, 1.0f);
         }
+        
+        vec3 auxColor;
+
         // VERTEX CONNECTION TO LIGHT SOURCE
         vec3 lSourced;
         float lSourceweight, lightSource_dist;
@@ -205,7 +216,7 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
 
         float wLight = bsdfDirPdfw / /* light_pick_probability * */ directPdfw;
         
-        float normalLight = normalize(cross(lights_[0].v1.xyz, lights_[0].v2.xyz));
+        vec3 normalLight = normalize(cross(lights_[0].v1.xyz, lights_[0].v2.xyz));
         float cosAtLight = dot(normalLight, - lSourced);
         
         float emissionPdfw = (2.0 / length(cross(lights_[0].v1.xyz, lights_[0].v2.xyz))) * cosAtLight * (1/PI);
@@ -215,21 +226,25 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
 
         float wCamera = (emissionPdfw * costheta / (directPdfw * cosAtLight)) * (etaVcm + dVCM + dVC * bsdfRevPdfw);
 
-        misWeight = 1.0f/(wLight+1+wCamera);
+        float misWeight = 1.0f/(wLight+1+wCamera);
         vec3 bsdfFactor = ray_.mat.albedo/PI + ray_.mat.specular_color * (ray_.mat.specular_roughness + 2.0f) * 0.5f / PI; // * pow(dot( , ), ray_.mat.specular_roughness);
-        tcol += fcol *  ((misWeight * costheta / (/* lightPickProb * */ directPdfw)) * lights_[0].emission.xyz * bsdfFactor)
+        auxColor = fcol *  ((misWeight * costheta / (/* lightPickProb * */ directPdfw)) * lights_[0].emission.xyz * bsdfFactor);
+        if(!isZero(auxColor))
+            tcol += auxColor;
         
         
         //VERTEX MERGING
-        /*
+        
         vec3 accum = vec3(0.0);
+        float dist;
         for(int i=0; i < LIGHTPATHLENGTH; i++){
             dist = length( light_paths_[i].position - ro);
             dist = dist*dist;
             if(dist <= Raio2){
                 vec3 nodeDir = normalize(light_paths_[i].position -  prevRo);
                 costheta = dot(ray_.normal, nodeDir);
-                if (costheta < 0) costheta *= -1;
+                if (costheta < 0) 
+                    {costheta *= -1;}
                 float cameraBsdfDirPdfW = diffChance*max(0.0f, costheta / PI) + specChance*((ray_.mat.specular_roughness+1)*pow(max(0.0f, dot(ray_.normal, nodeDir)),ray_.mat.specular_roughness)*(0.5f/PI));
                 
                 //vec3 bsdfFactor = ray_.mat.albedo/PI + ray_.mat.specular_color * (ray_.mat.specular_roughness + 2.0f) * 0.5f / PI; // * pow(dot( , ), ray_.mat.specular_roughness); usar quando resolver problema com direcoes no dot()
@@ -237,17 +252,22 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
                 wLight = light_paths_[i].dVCM * (1 / etaVcm) + light_paths_[i].dVM * cameraBsdfDirPdfW;
                 wCamera = dVCM * ( 1 / etaVcm) + dVM * bsdfRevPdfw;
                 misWeight = 1.0f/(wLight+1+wCamera);
-                accum += misWeight * light_paths_[i].color * bsdfFactor;// * ( 1 / ( 1 + light_paths_[i].dVCM * light_paths_[i].dVM + dVCM*dVM ));}
+                accum += misWeight * light_paths_[i].color * bsdfFactor;// * ( 1 / ( 1 + light_paths_[i].dVCM * light_paths_[i].dVM + dVCM*dVM ));
+                }
         }
-        tcol += fcol * accum * vmNormalization;
-        */
+        auxColor = fcol * accum * vmNormalization;
+        if(!isZero(auxColor))
+            tcol += auxColor;
+        
         //VERTEC CONNECTION 
         int random = randomInt(seed, 0, LIGHTPATHLENGTH-1);
         vec3 ldist = light_paths_[random].position -ro;
         vec3 ldistn = normalize(ldist);
         vec3 lcolor = light_paths_[random].color;
         if (!isOccluded(ro, ldistn, length(ldist))){
-            tcol += fcol * lcolor;
+        auxColor = fcol * lcolor;
+            if(!isZero(auxColor))
+                tcol += auxColor;
         }
 
         prevRayDir = rd;

@@ -248,7 +248,7 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
         if(ubo_.debug_normals) {
             return remap(ray_.normal, -1.0f, 1.0f, 0.0f, 1.0f);
         }
-
+        vec3 bsdfFactor = ray_.mat.albedo/PI + ray_.mat.specular_color * (ray_.mat.specular_roughness + 2.0f) * 0.5f / PI;
         vec3 ld;
         float weight, light_dist;
         float dist;
@@ -258,7 +258,7 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
             dist = length( light_paths_[i].position - ro);
             dist = dist*dist;
             if(dist <= Raio2)
-                accum +=light_paths_[i].color ;
+                accum +=light_paths_[i].color *bsdfFactor ;
         }
         tcol+=fcol * accum* vmNormalization;
         if(!specular_bounce)

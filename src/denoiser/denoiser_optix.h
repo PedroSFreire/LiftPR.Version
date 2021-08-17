@@ -25,10 +25,10 @@ class DenoiserOptix {
 public:
     void setup(vulkan::Device&, uint32_t queue_index);
     void denoiseImage(vulkan::Device& device,
-        VkCommandBuffer& command_buffer,
-        vulkan::CommandPool& command_pool,
-        vulkan::Image& in_image,
-        vulkan::Image& out_image);
+                      VkCommandBuffer& command_buffer,
+                      vulkan::CommandPool& command_pool,
+                      vulkan::Image& in_image,
+                      vulkan::Image& out_image);
     void destroy();
     static void createBufferCuda(vulkan::Device& device, CudaBuffer& cuda_buffer);
 
@@ -36,19 +36,21 @@ public:
 private:
     void allocateBuffers(vulkan::Device& device);
 
-    OptixDenoiser denoiser_{};
-    OptixDenoiserOptions denoiser_options_{};
-    OptixDenoiserSizes denoiser_sizes_{};
-    CUdeviceptr p_state_{ 0 };
-    CUdeviceptr p_scratch_{ 0 };
-    CUdeviceptr p_intensity_{ 0 };
-    CUdeviceptr p_min_rgb_{ 0 };
-    CUcontext cuda_context_{ nullptr };
+    OptixDenoiser denoiser_ {};
+    OptixDenoiserOptions denoiser_options_ {};
+    OptixDenoiserSizes denoiser_sizes_ {};
+    CUdeviceptr p_state_ {0};
+    CUdeviceptr p_scratch_ {0};
+    CUdeviceptr p_intensity_ {0};
+    CUdeviceptr p_min_rgb_ {0};
+    CUcontext cuda_context_{nullptr};
 
     nvvk::AllocatorVkExport vk_allocator_;
 
-    VkExtent2D image_size_{};
+    VkExtent2D image_size_ {};
     CudaBuffer pixel_buffer_in_;
     CudaBuffer pixel_buffer_out_;
     CUstream cuda_stream_;
+
+    OptixImage2D previous_output_{};
 };

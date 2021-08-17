@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-enum class Algorithm {VCM, PT, BDPT, LT, PPM };
+enum class Algorithm { PT, BDPT, PM, VCM };
 
 class AlgorithmList {
 public:

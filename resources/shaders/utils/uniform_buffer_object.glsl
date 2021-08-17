@@ -15,10 +15,12 @@ struct UniformBufferObject {
     //float focus_distance;
     float fov;
     float y;
+    //uint total_number_of_samples;
     uint number_of_samples;
     uint number_of_bounces;
     uint seed;
     float z;
+    //bool next_event_estimation;
     bool gamma_correction;
     bool tone_map;
     float exposure;

@@ -27,7 +27,6 @@ struct LightPathNode {
 
 #define LIGHTPATHLENGTH 3
 
-
 LightPathNode[LIGHTPATHLENGTH] light_paths_;
 
 //-----------------------------------------------------
@@ -44,7 +43,6 @@ void constructLightPath(inout uint seed) {
 
     vec3 ro = light.corner.xyz + light.v1.xyz * randomFloat(seed) + light.v2.xyz * randomFloat(seed);
     vec3 rd = light.normal.xyz + randomUnitVector(seed);
-
     rd = normalize(rd);
 
     vec3 color = light.emission.xyz ;
@@ -129,7 +127,7 @@ vec3 traceEyePath(in vec3 ro, in vec3 rd, inout uint seed) {
         vec3 ld;
         float weight, light_dist;
         sampleLight(ro, ld, light_dist, weight, seed);
-        // path of (j+1) eye path nodes, and 1 light path node ( = direct light sampling) //get radience maybe
+        // path of (j+1) eye path nodes, and 1 light path node ( = direct light sampling)
         if (!specular_bounce && !isOccluded(ro, ld, light_dist)) {
             tcol += (fcol * lights_[0].emission.xyz) * (weight * clamp(dot(ld, ray_.normal), 0., 1.)) / getWeightForPath(jdiff, -1);
         }
@@ -190,10 +188,10 @@ void main() {
     pixel_color = mix(last_frame_color.rgb, pixel_color, blend);
 
     imageStore(accumulation_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
-    
+
     // post processing
     pixel_color *= ubo_.exposure;
-    ivec2 size = imageSize(output_image_);
+
     if (ubo_.tone_map) {
         pixel_color = ACESFilm(pixel_color);
     }
@@ -201,5 +199,6 @@ void main() {
     if (ubo_.gamma_correction) {
         pixel_color = linearToSRGB(pixel_color);
     }
-        imageStore(output_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
+
+    imageStore(output_image_, ivec2(gl_LaunchIDEXT.xy), vec4(pixel_color, blend));
 }

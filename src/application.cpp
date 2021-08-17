@@ -116,11 +116,17 @@ assets::UniformBufferObject Application::getUniformBufferObject(VkExtent2D exten
     // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
     ubo.model_view_inverse = glm::inverse(ubo.modelView);
     ubo.projection_inverse = glm::inverse(ubo.projection);
+    //ubo.next_event_estimation = user_settings_.next_event_estimation;
+    //ubo.aperture = user_settings_.aperture;
+    //ubo.focus_distance = user_settings_.focus_distance;
+
     ubo.z = camera_->lookAt().z;
     ubo.x = camera_->lookAt().x;
-    //ubo.focus_distance = user_settings_.focus_distance;
+
     ubo.fov = user_settings_.fov;
     ubo.y = camera_->lookAt().y;
+
+    //ubo.total_number_of_samples = total_number_of_samples_;
     ubo.number_of_samples = user_settings_.number_of_samples;
     ubo.number_of_bounces = user_settings_.number_of_bounces;
     ubo.seed = Random::get(0u, 1000u);
