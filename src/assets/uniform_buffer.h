@@ -20,12 +20,10 @@ struct alignas(16) UniformBufferObject {
     //float focus_distance {};
     float fov {};
     float y {};
-    //uint32_t total_number_of_samples {};
     uint32_t number_of_samples {};
     uint32_t number_of_bounces {};
     uint32_t seed {};
-    float z {};
-    //uint32_t next_event_estimation {};  // bool
+    float z {};  // bool
     uint32_t gamma_correction {};  // bool
     uint32_t tone_map {};  // bool
     float exposure {};
@@ -33,6 +31,8 @@ struct alignas(16) UniformBufferObject {
     uint32_t frame {};
     uint32_t debug_normals {};  // bool
     uint32_t debug_radiance {};  // bool
+    float resX {};
+    uint32_t total_number_of_bounces {};
 };
 
 class UniformBuffer {

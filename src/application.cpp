@@ -116,17 +116,11 @@ assets::UniformBufferObject Application::getUniformBufferObject(VkExtent2D exten
     // https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
     ubo.model_view_inverse = glm::inverse(ubo.modelView);
     ubo.projection_inverse = glm::inverse(ubo.projection);
-    //ubo.next_event_estimation = user_settings_.next_event_estimation;
-    //ubo.aperture = user_settings_.aperture;
-    //ubo.focus_distance = user_settings_.focus_distance;
-
     ubo.z = camera_->lookAt().z;
     ubo.x = camera_->lookAt().x;
-
+    //ubo.focus_distance = user_settings_.focus_distance;
     ubo.fov = user_settings_.fov;
     ubo.y = camera_->lookAt().y;
-
-    //ubo.total_number_of_samples = total_number_of_samples_;
     ubo.number_of_samples = user_settings_.number_of_samples;
     ubo.number_of_bounces = user_settings_.number_of_bounces;
     ubo.seed = Random::get(0u, 1000u);
@@ -137,6 +131,8 @@ assets::UniformBufferObject Application::getUniformBufferObject(VkExtent2D exten
     ubo.debug_radiance = user_settings_.debug_radiance;
     ubo.has_sky = camera_->hasSky();
     ubo.frame = number_of_frames_;
+    ubo.resX = camera_->resolutionX() ;
+    ubo.total_number_of_bounces = total_number_of_samples_;
 
     return ubo;
 }
@@ -228,7 +224,7 @@ void Application::loadScene(const uint32_t scene_index) {
     camera_initial_state_ = assets.camera;
     user_settings_.fov = camera_initial_state_.field_of_view;
     user_settings_.aperture = camera_initial_state_.aperture;
-    user_settings_.focus_distance = camera_initial_state_.focus_distance;
+    user_settings_.focus_distance = camera_initial_state_.resX;
     user_settings_.gamma_correction = camera_initial_state_.gamma_correction;
     user_settings_.camera_move_speed = camera_initial_state_.move_speed;
     user_settings_.camera_mouse_speed = camera_initial_state_.look_speed;
@@ -355,7 +351,10 @@ bool Application::onKeyRelease(KeyReleasedEvent& e) {
     return false;
 }
 bool Application::hasReachedTargetFrame() const {
-    bool reached_frame = user_settings_.target_frame_count != 0 && total_number_of_samples_ >= user_settings_.target_frame_count;
-    bool reached_time = user_settings_.target_render_time > 0.0f && Timer::elapsed_time >= user_settings_.target_render_time;
+    bool reached_frame = false;
+    ;                           // /*user_settings_.target_frame_count == number_of_frames_;// && */
+                                            // total_number_of_samples_ >= user_settings_.max_number_of_samples;
+    bool reached_time = false;  // user_settings_.target_render_time > 0.0f && Timer::elapsed_time >=
+                                              // user_settings_.target_render_time;
     return reached_frame || reached_time;
 }

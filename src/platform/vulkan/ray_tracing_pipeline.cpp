@@ -166,13 +166,13 @@ RayTracingPipeline::RayTracingPipeline(const DeviceProcedures& device_procedures
         rgen_path = "../resources/shaders/bdpt.rgen.spv";
         //        chit_path = "../resources/shaders/bdpt.rchit.spv";
     }
-    else if (algorithm == Algorithm::PM) {
-        rgen_path = "../resources/shaders/pm.rgen.spv";
-        //        chit_path = "../resources/shaders/bdpt.rchit.spv";
-    }
     else if (algorithm == Algorithm::VCM) {
         rgen_path = "../resources/shaders/vcm.rgen.spv";
-        //        chit_path = "../resources/shaders/bdpt.rchit.spv";
+    }
+    else if (algorithm == Algorithm::VM) {
+        rgen_path = "../resources/shaders/vm.rgen.spv";
+    } else if (algorithm == Algorithm::VC) {
+        rgen_path = "../resources/shaders/vc.rgen.spv";
     }
 
     const ShaderModule ray_gen_shader(device, rgen_path);

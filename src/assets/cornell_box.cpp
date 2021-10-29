@@ -19,12 +19,14 @@ void CornellBox::create(const float scale, SceneAssets& scene_assets, bool has_l
     std::string green("green diffuse");
     std::string red("red diffuse");
     std::string white("white diffuse");
+    std::string whiteg("white glossy");
     std::string light("light");
 
     scene_assets.materials[green] = Material::createLambertian(vec3(0.05f, 0.80f, 0.05f));  // green
     scene_assets.materials[red] = Material::createLambertian(vec3(0.80f, 0.05f, 0.05f));    // red
+    scene_assets.materials[whiteg] = Material::createPhong(vec3(0.80f, 0.80f, 0.80f) , 1.0f);  // white
     scene_assets.materials[white] = Material::createLambertian(vec3(0.80f, 0.80f, 0.80f));  // white
-    scene_assets.materials[light] = Material::createEmissive(vec3(15.0f, 15.0f, 15.0f));    // light
+    scene_assets.materials[light] = Material::createEmissive(vec3(0.90f, 0.90f, 0.90f));    // light
 
     const float s = scale;
 

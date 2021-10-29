@@ -14,6 +14,8 @@ vec3 remap(vec3 v, float a1, float a2, float b1, float b2) {
 
 float fresnelReflectAmount(float n1, float n2, vec3 normal, vec3 incident, float f0, float f90) {
     // Schlick aproximation
+    if(n1 == -1.0 || n2 == -1.0f)
+        return f0;
     float r0 = (n1-n2) / (n1+n2);
     r0 *= r0;
     float cosX = -dot(normal, incident);
@@ -80,4 +82,64 @@ vec3 cosWeightedRandomHemisphereDirection(const vec3 n, inout uint seed) {
     vec3  rr = vec3(rx*uu + ry*vv + rz*n);
 
     return normalize(rr);
+}
+
+float DistributionGGX(float NdotH, float alpha )
+{
+	float a2 =  alpha * alpha;
+
+	float d = (NdotH * NdotH) * (a2-1.0f) + 1.0f;
+    return a2 / (d * d * c_pi);
+}
+
+float smithLambda(float wDotN, float alpha) 
+{
+    float wDotN2 = wDotN * wDotN;
+    float tanSqrd = max((1-wDotN2),0.0f) / wDotN2;
+
+    return 0.5f * (-1 + sqrt(1 + alpha * tanSqrd));
+}
+
+float SmithHeightCorrelated(float w0DotN, float wiDotN, float alpha) 
+{
+    if (w0DotN <= 0 || wiDotN <= 0) 
+        return 0;
+
+    return 1.0/(1.0+smithLambda(w0DotN,alpha)+smithLambda(wiDotN,alpha));
+}
+
+vec3 evalFresnelSchlick(vec3 f0, vec3 f90, float cosTheta)
+{
+    return f0 + (f90 - f0) * pow(max(1.0f - cosTheta, 0.0f), 5.0f); // Clamp to avoid NaN if cosTheta = 1+epsilon
+}
+
+vec3 importanceSampleGGX(inout uint seed, float alpha, vec3 normal, vec3 w0) 
+{
+    vec2 Xi = vec2(randomFloat(seed), randomFloat(seed));
+	float phi = 2.0 * c_pi * Xi.x;
+	float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (alpha*alpha - 1.0) * Xi.y));
+	float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+
+	//from spherical coordinates to cartesian coordinates
+	vec3 H;
+	H.x = cos(phi) * sinTheta;
+	H.y = sin(phi) * sinTheta;
+	H.z = cosTheta;
+	
+	// Tangent space
+	vec3 up = abs(normal.z) < 0.999 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0);
+	vec3 tangentX = normalize(cross(up, normal));
+	vec3 tangentY = normalize(cross(normal, tangentX));
+
+	// Convert to world Space
+	vec3 h = normalize(tangentX * H.x + tangentY * H.y + normal * H.z);
+	
+	vec3 wi = reflect(w0, h);
+
+	if(dot(wi, normal) > 0.0f) {
+        return wi;
+    }
+	else {
+		return vec3(0.0f);
+	}
 }

@@ -114,7 +114,6 @@ void DenoiserOptix::denoiseImage(vulkan::Device& device,
         denoiser_layer.previousOutput = previous_output_;
     }
 
-
     OPTIX_CHECK(optixDenoiserInvoke(denoiser_,
                                     stream,
                                     &denoiser_params,

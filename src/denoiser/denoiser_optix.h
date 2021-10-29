@@ -1,13 +1,12 @@
 #pragma once
 
-
 #include "optix_types.h"
 #include "vulkan/buffer.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <nvvk/allocator_dedicated_vk.hpp>
-#include <vulkan/image.h>
 #include <vulkan/device.h>
+#include <vulkan/image.h>
 
 struct CudaBuffer {
     nvvk::BufferDedicated buf_vk;
@@ -32,7 +31,6 @@ public:
     void destroy();
     static void createBufferCuda(vulkan::Device& device, CudaBuffer& cuda_buffer);
 
-
 private:
     void allocateBuffers(vulkan::Device& device);
 
@@ -43,7 +41,7 @@ private:
     CUdeviceptr p_scratch_ {0};
     CUdeviceptr p_intensity_ {0};
     CUdeviceptr p_min_rgb_ {0};
-    CUcontext cuda_context_{nullptr};
+    CUcontext cuda_context_ {nullptr};
 
     nvvk::AllocatorVkExport vk_allocator_;
 
@@ -52,5 +50,5 @@ private:
     CudaBuffer pixel_buffer_out_;
     CUstream cuda_stream_;
 
-    OptixImage2D previous_output_{};
+    OptixImage2D previous_output_ {};
 };

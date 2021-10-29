@@ -12,7 +12,7 @@ struct CameraState {
     glm::vec3 up;
     float field_of_view;
     float aperture;
-    float focus_distance;
+    float resX;
     float aspect_ratio;
     bool gamma_correction;
     bool has_sky;
@@ -31,6 +31,7 @@ public:
     [[nodiscard]] const vec3& up() const { return state_.up; }
     [[nodiscard]] float fovy() const { return state_.field_of_view; }
     [[nodiscard]] float aspectRatio() const { return state_.aspect_ratio; }
+    [[nodiscard]] float resolutionX() const { return state_.resX; }
     [[nodiscard]] bool hasSky() const { return state_.has_sky; }
     [[nodiscard]] CameraState state() const { return state_; }
 

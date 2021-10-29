@@ -16,7 +16,7 @@ Options::Options(const int argc, const char* argv[]) {
     renderer.add_options()
         ("samples,n", value<uint32_t>(&samples)->default_value(1), "number of rays per pixel")
         ("bounces,b", value<uint32_t>(&bounces)->default_value(32), "maximum path length")
-        ("max-samples", value<uint32_t>(&max_samples)->default_value(2048), "accumulation target");
+        ("max-samples", value<uint32_t>(&max_samples)->default_value(65536), "accumulation target");
 
     options_description algorithm("algorithm");
     algorithm.add_options()

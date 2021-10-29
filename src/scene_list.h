@@ -29,9 +29,13 @@ public:
     static SceneAssets cornellBox();
     static SceneAssets teapot();
     static SceneAssets cornellBoxDragon();
+    static SceneAssets cornellBoxDragon2();
     static SceneAssets diningRoom();
     static SceneAssets classroom();
     static SceneAssets bathroom();
+    static SceneAssets car();
+    static SceneAssets testScene();
+    static SceneAssets smallVcm();
 
     static const std::vector<std::pair<std::string, std::function<SceneAssets()>>> all_scenes;
 };
