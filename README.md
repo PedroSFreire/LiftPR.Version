@@ -13,7 +13,7 @@
 > currently supported on visual studio and clion
  
 ```bash
-git clone --recurse-submodules https://github.com/GoncaloFDS/Lift
+git clone --recurse-submodules https://github.com/pedro-miguel-rodrigues/Lift
 cd Lift
 .\vcpkg_windows.bat
 ```
