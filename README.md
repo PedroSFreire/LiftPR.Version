@@ -6,7 +6,7 @@
 
 ###### Build Instructions
 
-> Install CUDA 10.2, Optix 7.1 and vulkan SDK 1.2 \
+> Install CUDA 10.2, Optix 7.3 and vulkan SDK 1.2 \
 > While VK_KHR_ray_tracing is in beta the beta drivers are needed https://developer.nvidia.com/vulkan-driver
 *  Install Directories should be specified on cmake or you can set them as system variables
 
